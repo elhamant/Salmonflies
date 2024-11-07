@@ -1,0 +1,118 @@
+---
+title: "Growth Analysis"
+author: "Emily"
+date: "2024-11-07"
+output: github_document
+---
+
+## This document is the start of attempting again to publish my undergraduate work
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+
+```{r load packages, message = FALSE}
+library(dplyr)
+library(tidyverse)
+library(janitor)
+```
+
+
+Load the conditioning growth data for both 7 and 25 days of conditioning
+```{r load data, message = FALSE}
+raw_growth = read_csv("C:\\Users\\emily\\OneDrive\\Documents\\Undergrad\\Undergrad year 4\\Thesis\\Analysis\\Data\\Allgrowth.csv")
+
+
+```
+
+
+Cleaning data to make the names better, mutating into correct types, and adding a column to calculate the difference and relative difference of weights. This will be used to later calculate the differences between means within each conditioning period and difference in means between 7 days of conditioning and 25 days of conditioning
+```{r clean names, message = FALSE}
+
+clean_growth = raw_growth |>
+  clean_names() |>
+  rename(tree_species = species, initial_g = initial, final_g = final)|>
+  select(conditioning_days, tree_species, initial_g, final_g) |>
+  mutate(conditioning_days = as_factor(conditioning_days),
+         diff_g= initial_g - final_g, 
+         relative_diff = (initial_g - final_g)/initial_g)
+  
+```
+]
+
+
+```{r boxplot relative growth}
+clean_growth |>
+  group_by(tree_species)|>
+  ggplot(aes(tree_species, relative_diff, color = conditioning_days)) +
+  geom_boxplot()+
+  labs(x = "Tree Species", y = "Relative Difference of Growth", 
+       color = "Leaf Conditioning Time (days)") +
+  facet_wrap(~conditioning_days, nrow= 2)+
+  theme_bw()
+```
+<br> 
+
+Scatterplot of Growth vs initial stonefly weight 
+
+```{r}
+clean_growth |>
+  group_by(tree_species)|>
+  ggplot(aes(initial_g, diff_g, color = tree_species)) +
+  geom_point()+
+  labs(x = "Tree Species", y = "Relative Difference of Growth", 
+       color = "Tree Species") +
+  facet_wrap(~conditioning_days, nrow= 1)+
+  theme_bw()
+```
+
+<br>
+
+Growth vs Initial Weight of stoneflies 
+
+```{r}
+clean_growth |> 
+  ggplot(aes(initial_g, diff_g, color = conditioning_days)) +
+  geom_point()+
+  labs(x = "Tree Species", y = "Relative Difference of Growth", 
+       color = "Conditioning Time (days)") +
+  theme_bw()
+```
+
+
+# Calculating ANOVA and LM of difference between means for 7 and 25 days of conditioning on the growth of salmonflies
+
+
+
+```{r 7 days of conditioning ANOVA growth}
+
+seven_growth = clean_growth |>
+  filter(conditioning_days == 7)
+
+seven_growth_lm = lm(diff_g~initial_g*tree_species, data = seven_growth)
+
+anova(seven_growth_lm)
+```
+```
+Testing for difference of means for between tree species under 25 days of conditioning
+```{r ANOVA for 25 days of conditioning}
+
+twentyfive_growth = clean_growth |>
+  filter(conditioning_days == 25)
+
+twentyfive_growth_lm = lm(diff_g~initial_g*tree_species, data = twentyfive_growth)
+
+anova(twentyfive_growth_lm)
+```
+
+
+Found that tree species didn't affect growth at 25 days of conditioning, so now testing conditioning days and initial mass 
+
+```{r}
+
+conditioning_lm = lm(diff_g~conditioning_days*initial_g, data = clean_growth)
+
+anova(conditioning_lm)
+
+```
+
