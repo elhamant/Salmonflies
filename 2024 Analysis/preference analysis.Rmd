@@ -1,0 +1,118 @@
+---
+title: "Preference Analysis"
+author: "Emily"
+date: "2024-11-08"
+output: html_document
+---
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+# This is where I am analysing the preference data 
+
+# Prep
+
+## load packages 
+
+```{r load packages, message = FALSE}
+library(tidyverse)
+library(dplyr)
+library(janitor)
+library(knitr)
+```
+
+
+
+## read data 
+
+```{r, message = FALSE}
+raw_preference = read_csv("C:\\github\\Salmonflies\\Data\\Used_in_2024_Analysis\\Rawdata_allpreference_prepped.csv")
+```
+
+# 7 Days of Conditioning 
+
+## Cleaning 
+
+```{r}
+seven_day_preference = raw_preference |>
+  clean_names() |>
+  separate_wider_delim(cols = "cup", delim = " ", names = c("treatment", "cup"))|>
+  filter(conditioning_time == 7)
+```
+
+<br> 
+
+## Calculate Chi Square statistics
+
+```{r chi square 7 day}
+contingency_table_7 = seven_day_preference |>
+  filter(terminated == FALSE) |>
+  group_by(treatment)|>
+  summarize(count_cottonwood = sum(cottonwood), count_other = sum(other))
+
+contingency_table_7 |>
+  kable()
+
+for (treat in unique(contingency_table_7$treatment)) {
+  treatment_table <- contingency_table_7 |>
+    filter(treatment == treat) |>
+    select(-treatment)
+  
+  assign(paste0("treatment_", gsub(" ", "_", treat)), treatment_table)
+  
+  chi2_result <- chisq.test(treatment_table)
+  
+  assign(paste0("chi2_result_", gsub(" ", "_", treat)), chi2_result)
+  
+  print(paste("Chi-square test result for treatment:", treat))
+  print(chi2_result)
+}
+
+```
+
+
+We measured the leaf preference of salmonflies as the daily location of individuals on each leaf type. Under seven days of conditioning, salmonflies preferred to occupy alder leaves over cottonwood leaves (Chi-square test, P<0.0001 under 1 df), but preferred cottonwood leaves over chokecherry, dogwood, and willow leaves Chi-square test, P<0.0001, P=0.03075, and P<0.00001, respectively, under 1 df). 
+
+<br>
+
+# 25 Days of Conditioning 
+
+## Cleaning 
+
+```{r}
+twentyfive_day_preference = raw_preference |>
+  clean_names() |>
+  separate_wider_delim(cols = "cup", delim = " ", names = c("treatment", "cup"))|>
+  filter(conditioning_time == 25)
+```
+
+<br> 
+
+## Calculate Chi Square statistics
+
+```{r chi square 25 day}
+contingency_table_25 = twentyfive_day_preference |>
+  filter(terminated == FALSE) |>
+  group_by(treatment)|>
+  summarize(count_cottonwood = sum(cottonwood), count_other = sum(other))
+
+contingency_table_25 |>
+  kable()
+
+for (treat in unique(contingency_table_25$treatment)) {
+  treatment_table <- contingency_table_25 |>
+    filter(treatment == treat) |>
+    select(-treatment)
+  
+  assign(paste0("treatment_", gsub(" ", "_", treat)), treatment_table)
+  
+  chi2_result <- chisq.test(treatment_table)
+  
+  assign(paste0("chi2_result_", gsub(" ", "_", treat)), chi2_result)
+  
+  print(paste("Chi-square test result for treatment:", treat))
+  print(chi2_result)
+}
+
+```
+Under twenty-five days of conditioning, there was no difference in the leaf preference of salmonflies between alder leaves and cottonwood leaves (Chi-square test, P = .5839 under 1 df), or dogwood and cottonwood (Chi-square test, p = .06789 under 1 df). Salmonflies preferred cottonwood leaves over chokecherry and willow leaves (Chi-square test, P<0.00001 for both treatments under 1 df). Under both conditioning periods, there is evidence of a difference in preferred location of salmonflies, where individuals prefer to occupy cottonwood leaves over other species, excluding alder.
