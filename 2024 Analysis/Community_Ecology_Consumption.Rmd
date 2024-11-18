@@ -175,7 +175,7 @@ There is a significant difference in the amount of leaf eaten between treatment 
 
 ## Pairwise T tests using bonferroni correction methods 
 ```{r}
-pairwiseT <-clean_LA |>
+pairwiseT = clean_LA |>
   filter(outlier == FALSE) |>
   group_by(treatment)|>
   pairwise_t_test(prop_eaten~leaftype, 
