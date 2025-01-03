@@ -1,19 +1,13 @@
----
-title: "Community_Ecology_Growth"
-author: "Emily"
-date: "2024-11-18"
-output: github_document
----
+Community_Ecology_Growth
+================
+Emily
+2024-11-18
 
-```{r setup, include=FALSE}
-knitr::opts_chunk$set(echo = TRUE)
-```
+# This is an exploration of the relationship between leaf type and Growth of Salmonflies
 
-# This is an exploration of the relationship between leaf type and Growth of Salmonflies 
+#### Load Packages
 
-#### Load Packages 
-
-```{r load packages, message = FALSE, warning = FALSE}
+``` r
 library(tidyverse)
 library(dplyr)
 library(car)
@@ -23,13 +17,14 @@ library(outliers)
 ```
 
 #### Load Data
-```{r load data, message = FALSE}
+
+``` r
 raw_data<-read_csv("C:\\github\\Salmonflies\\Data\\communityecologydata_2022.csv", n_max=84)
 ```
 
-#### Clean Data 
+#### Clean Data
 
-```{r}
+``` r
 clean_LA <- raw_data |>
   select("treatment", "replicate", "leaf type", "leaf area initial", 
          "leaf area final", "mass initial", "mass final")|>
@@ -57,42 +52,47 @@ clean_LA <- raw_data |>
   ungroup()
 ```
 
+\##3 Plot Growth
 
-##3 Plot Growth 
-
-```{r, message = FALSE}
+``` r
 clean_LA |>
   filter(growth_outlier==FALSE)|>
   ggplot(aes(prop_eaten, growth, color = leaftype))+
   geom_point()+
   geom_smooth(method = "lm", se = FALSE, linewidth = .3) +
   facet_wrap(~treatment)
+```
 
+![](Community_Ecology_Growth_files/figure-gfm/unnamed-chunk-2-1.png)<!-- -->
+
+``` r
 clean_LA |>
   filter(growth_outlier==FALSE, leaftype != "Cottonwood") |>
   ggplot(aes(diffprop, growth, color = leaftype))+
   geom_point()+
   geom_smooth(method = "lm", se=FALSE, linewidth = .3)+
   facet_wrap(~treatment)
-  
 ```
-<br> 
 
-## Analysis 
+![](Community_Ecology_Growth_files/figure-gfm/unnamed-chunk-2-2.png)<!-- -->
+<br>
+
+## Analysis
 
 ## Filter the outliers oout
-```{r}
+
+``` r
 filtered_LA = clean_LA|>
   filter(growth_outlier == FALSE)
 ```
 
 ## ANOVA Test for difference in means between Treatments
-```{r, eval= FALSE}
 
+``` r
 anova_result <- aov(growth~ treatment, data = filtered_LA)
 
 summary(anova_result)
-
 ```
 
-There is no difference in means between the treatment types for salmonfly growth. 
+There is no difference in means between the treatment types for
+salmonfly growth.
