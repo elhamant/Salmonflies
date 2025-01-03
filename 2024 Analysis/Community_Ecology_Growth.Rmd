@@ -80,18 +80,18 @@ clean_LA |>
 
 ## Analysis 
 
-## Filter the outliers oout
+## Filter the outliers out
 ```{r}
 filtered_LA = clean_LA|>
   filter(growth_outlier == FALSE)
 ```
 
 ## ANOVA Test for difference in means between Treatments
-```{r, eval= FALSE}
+```{r, eval= TRUE}
 
 anova_result <- aov(growth~ treatment, data = filtered_LA)
 
-summary(anova_result)
+print(summary(anova_result))
 
 ```
 

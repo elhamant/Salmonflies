@@ -79,7 +79,7 @@ clean_LA |>
 
 ## Analysis
 
-## Filter the outliers oout
+## Filter the outliers out
 
 ``` r
 filtered_LA = clean_LA|>
@@ -91,8 +91,12 @@ filtered_LA = clean_LA|>
 ``` r
 anova_result <- aov(growth~ treatment, data = filtered_LA)
 
-summary(anova_result)
+print(summary(anova_result))
 ```
+
+    ##             Df   Sum Sq   Mean Sq F value Pr(>F)
+    ## treatment    3 0.000185 6.176e-05   0.221  0.881
+    ## Residuals   46 0.012837 2.791e-04
 
 There is no difference in means between the treatment types for
 salmonfly growth.
