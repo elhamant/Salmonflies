@@ -2,7 +2,7 @@
 title: "Consumption_Community_Ecology"
 author: "Emily"
 date: "2024-11-18"
-output: html_document
+output: github_document
 ---
 
 ```{r setup, include=FALSE}
